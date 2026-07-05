@@ -10,3 +10,4 @@ bcrypt==5.0.0
 extra-streamlit-components==0.1.81
 mailchimp3==3.0.21
 pymongo==4.17.0
+PyYAML==6.0.3
