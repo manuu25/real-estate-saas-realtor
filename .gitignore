@@ -1,0 +1,16 @@
+# Secretos y entorno local — NUNCA subir
+.env
+.env.*
+!.env.example
+
+# Entorno virtual
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Streamlit local
+.streamlit/
+
+# Artefactos PDF/temporales generados en runtime
+*.pdf
