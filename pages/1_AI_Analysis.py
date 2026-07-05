@@ -4,10 +4,7 @@ try:
     from embedchain import App  # Optional: only needed for the "Chat With Tenant" page.
 except Exception:  # noqa: BLE001
     App = None
-from utils import *
-from openai import OpenAI
-
-client = OpenAI()
+from utils import *  # provee `client` y `LLM_MODEL` (endpoint/modelo LLM configurables)
 from chardet.universaldetector import UniversalDetector
 from streamlit_authenticator import Authenticate
 import re
@@ -50,7 +47,7 @@ def main():
             with open(local_file_path, 'r', encoding=file_encoding) as f:
                 file_content = f.read()
             file_content = re.sub(r'([a-zA-Z0-9])([a-zA-Z0-9])', r'\1 \2', file_content)
-            response = client.chat.completions.create(model="gpt-4o-mini",
+            response = client.chat.completions.create(model=LLM_MODEL,
             messages=[
                 {'role': 'system', 'content': f'You work for a detailed-oriented property manager and are currently evaluating a prospective tenant. Your goal is to evaluate the tenant and determine whether they are a good fit for the property based only on the document provided. Pay close attention to key metrics like credit score, income level and job stability. Be highly suspect of any red flags.'},
                 {"role": "user", "content": f"Based on the following document from {name} with document type {document_type}, provide a concise summary of all meaningful aspects of the document for you manager. Be sure to highlight key numerical variables in your analysis. The information you provide should help to determine whether {name} is a good fit as a tenant. Finally, provide commentary on whether you believe this tenant is a strong candidate. \n ```{file_content}```"}
@@ -66,7 +63,7 @@ def main():
             st.markdown(response_text)
         st.write(responses)
         # AI Tenant Evaluation Section
-        response = client.chat.completions.create(model="gpt-4o-mini",
+        response = client.chat.completions.create(model=LLM_MODEL,
         messages=[
             {'role': 'system', 'content': f'You are a highly detail-oriented property manager and are currently evaluating a prospective tenant. Your goal is to evaluate the tenant and determine whether they are a good fit for the property based on several reports provided to you. Pay close attention to key metrics like credit score, income level and job stability. Be highly suspect of any red flags.'},
             {"role": "user", "content": f'''You are provided with several key summaries of the documents provided by prospective tenant named {name} for a rental property located at {address}. Based on these documents, write the following report with 3 sections.

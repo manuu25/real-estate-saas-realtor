@@ -4,10 +4,7 @@ try:
     from embedchain import App  # Optional: only needed for the "Chat With Tenant" page.
 except Exception:  # noqa: BLE001
     App = None
-from utils import *
-from openai import OpenAI
-
-client = OpenAI()
+from utils import *  # provee `client` y `LLM_MODEL` (endpoint/modelo LLM configurables)
 from chardet.universaldetector import UniversalDetector
 from streamlit_authenticator import Authenticate
 import re
@@ -102,7 +99,7 @@ def main():
 
         name = selected_tenant.replace('_', ' ')  # This should be fetched dynamically
         address = selected_address
-        response = client.chat.completions.create(model="gpt-4o-mini",
+        response = client.chat.completions.create(model=LLM_MODEL,
         messages=[
             {'role': 'system', 'content': f'You are a critical property manager and are currently evaluating a prospective tenant named {name} for a rental property located at {address}. Your goal is to evaluate the tenant and determine whether they are a good fit for the property. Pay close attention to key metrics like credit score, income level and job stability. Be highly suspect of any red flags.'},
             {"role": "user", "content": f"Based on the following document from {name} with document type {doc_type}, provide concise meaningful commentary on whether {name} is a good fit for the property.\n ```{file_content}```"}

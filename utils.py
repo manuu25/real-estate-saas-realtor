@@ -22,9 +22,15 @@ try:
 except Exception:
     pass
 
-# Cliente OpenAI tolerante: si falta la clave, la app arranca igual y el analisis IA
-# avisara al usuarse (en vez de romper el import).
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY") or "sk-not-configured")
+# LLM configurable via API compatible con OpenAI. Por defecto: Groq (gratis, sin tarjeta).
+#   OPENAI_BASE_URL = https://api.groq.com/openai/v1
+#   OPENAI_API_KEY  = <tu clave gratis de Groq>
+#   LLM_MODEL       = llama-3.3-70b-versatile (u otro de Groq)
+LLM_MODEL = os.environ.get("LLM_MODEL") or "llama-3.3-70b-versatile"
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY") or "not-configured",
+    base_url=os.environ.get("OPENAI_BASE_URL") or None,
+)
 
 # AWS Credentials from OS environment variables
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
@@ -181,7 +187,7 @@ def create_bot(selected_address, selected_tenant):
             file_content = f.read()
         name = selected_tenant.replace('_', ' ')  # This should be fetched dynamically
         address = selected_address
-        response = client.chat.completions.create(model="gpt-4o-mini",
+        response = client.chat.completions.create(model=LLM_MODEL,
         messages=[
               {'role': 'system', 'content': f'You are very detail oriented property management analyst, who carefully reads all details of an unstructured document and creates a structured document containing all key pieces of information that would be helpful for analyzing the tenant.'},
             {"role": "user", "content": f"Based on the following messy document from {name} with document type {document_type}, provide a summary of the document. Carefully report all key metrics. Do not provide your own commentary. Just summarize very carefully. Only include information that would be important for determining whether the tenant is a good fit for the rental property. Don't include anything about disclaimers or stuff like that. Here is the document: \n ```{file_content}```"}
